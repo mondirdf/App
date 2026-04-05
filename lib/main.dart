@@ -92,7 +92,7 @@ class _RootScreenState extends State<RootScreen> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = <Widget>[
-      HomeScreen(storageService: _storageService, onEntrySaved: _loadEntries),
+      HomeScreen(storageService: _storageService, statsService: _statsService, onEntrySaved: _loadEntries),
       StatsScreen(entries: _entries, statsService: _statsService),
       StudyScreen(entries: _entries),
       HighlightsScreen(entries: _entries),
@@ -115,7 +115,7 @@ class _RootScreenState extends State<RootScreen> {
             BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
             BottomNavigationBarItem(icon: Icon(Icons.insert_chart_outlined), label: 'Stats'),
             BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), label: 'Study Log'),
-            BottomNavigationBarItem(icon: Icon(Icons.highlight_outlined), label: 'Highlights'),
+            BottomNavigationBarItem(icon: Icon(Icons.star_outline), label: 'Events'),
           ],
         ),
       ),
