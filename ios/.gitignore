@@ -1,0 +1,8 @@
+**/xcuserdata/
+**/.packages
+**/Pods/
+**/.symlinks/
+**/GeneratedPluginRegistrant.*
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-plugins

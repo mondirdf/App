@@ -19,6 +19,9 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Regenerate Flutter platform folders
+        run: flutter create . --platforms=android,ios --project-name daily_tracker --org com.example
+
       - name: Install dependencies
         run: flutter pub get
 
