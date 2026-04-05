@@ -7,6 +7,7 @@ import 'screens/stats_screen.dart';
 import 'screens/study_screen.dart';
 import 'services/stats_service.dart';
 import 'services/storage_service.dart';
+import 'theme_constants.dart';
 
 void main() {
   runApp(const DailyTrackerApp());
@@ -18,27 +19,38 @@ class DailyTrackerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Daily Tracker',
+      title: 'fday',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: kBackgroundColor,
         colorScheme: const ColorScheme.light(
-          primary: Colors.black,
-          onPrimary: Colors.white,
-          surface: Colors.white,
-          onSurface: Colors.black,
+          primary: kPrimaryColor,
+          onPrimary: kBackgroundColor,
+          surface: kBackgroundColor,
+          onSurface: kPrimaryColor,
+          outline: kBorderColor,
         ),
         appBarTheme: const AppBarTheme(
           elevation: 0,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          backgroundColor: kBackgroundColor,
+          foregroundColor: kPrimaryColor,
         ),
+        cardColor: kBackgroundColor,
+        dividerColor: kBorderColor,
+        splashFactory: NoSplash.splashFactory,
+        highlightColor: Colors.transparent,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          selectedItemColor: Colors.black,
+          elevation: 0,
+          backgroundColor: kBackgroundColor,
+          selectedItemColor: kPrimaryColor,
           unselectedItemColor: Colors.black54,
           selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
           type: BottomNavigationBarType.fixed,
+        ),
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: kPrimaryColor,
+          contentTextStyle: TextStyle(color: kBackgroundColor),
+          behavior: SnackBarBehavior.floating,
         ),
         useMaterial3: true,
       ),
@@ -88,19 +100,24 @@ class _RootScreenState extends State<RootScreen> {
 
     return Scaffold(
       body: tabs[_currentTabIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTabIndex,
-        onTap: (int index) {
-          setState(() {
-            _currentTabIndex = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.insert_chart_outlined), label: 'Stats'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), label: 'Study Log'),
-          BottomNavigationBarItem(icon: Icon(Icons.highlight_outlined), label: 'Highlights'),
-        ],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: kBorderColor)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentTabIndex,
+          onTap: (int index) {
+            setState(() {
+              _currentTabIndex = index;
+            });
+          },
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.insert_chart_outlined), label: 'Stats'),
+            BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), label: 'Study Log'),
+            BottomNavigationBarItem(icon: Icon(Icons.highlight_outlined), label: 'Highlights'),
+          ],
+        ),
       ),
     );
   }

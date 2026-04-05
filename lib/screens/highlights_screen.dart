@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/day_entry.dart';
+import '../theme_constants.dart';
 import '../widgets/simple_card.dart';
 
 class HighlightsScreen extends StatelessWidget {
@@ -17,7 +18,7 @@ class HighlightsScreen extends StatelessWidget {
       ..sort((DayEntry a, DayEntry b) => DateTime.parse(b.date).compareTo(DateTime.parse(a.date)));
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -29,13 +30,13 @@ class HighlightsScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: kPrimaryColor,
                 ),
               ),
               const SizedBox(height: 16),
               Expanded(
                 child: sortedEntries.isEmpty
-                    ? const Center(child: Text('No highlights yet.'))
+                    ? const Center(child: Text('No highlights yet.', style: TextStyle(color: kPrimaryColor)))
                     : ListView.separated(
                         itemCount: sortedEntries.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 8),
