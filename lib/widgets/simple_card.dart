@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme_constants.dart';
+
 class SimpleCard extends StatelessWidget {
   const SimpleCard({
     super.key,
@@ -16,9 +18,9 @@ class SimpleCard extends StatelessWidget {
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(10),
+        color: kBackgroundColor,
+        border: Border.all(color: kBorderColor),
+        borderRadius: BorderRadius.circular(kCornerRadius),
       ),
       child: child,
     );

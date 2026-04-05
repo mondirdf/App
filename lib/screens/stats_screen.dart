@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/day_entry.dart';
 import '../services/stats_service.dart';
+import '../theme_constants.dart';
 import '../widgets/simple_card.dart';
 
 class StatsScreen extends StatelessWidget {
@@ -22,7 +23,7 @@ class StatsScreen extends StatelessWidget {
     final DayEntry? bestDay = statsService.getBestDay(List<DayEntry>.from(entries));
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -33,13 +34,13 @@ class StatsScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: kPrimaryColor,
                 ),
               ),
               const SizedBox(height: 16),
               const Text(
                 'Study',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kPrimaryColor),
               ),
               const SizedBox(height: 8),
               SimpleCard(
@@ -61,7 +62,7 @@ class StatsScreen extends StatelessWidget {
               const SizedBox(height: 16),
               const Text(
                 'Sleep',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kPrimaryColor),
               ),
               const SizedBox(height: 8),
               SimpleCard(

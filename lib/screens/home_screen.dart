@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/day_entry.dart';
 import '../services/storage_service.dart';
+import '../theme_constants.dart';
 import '../widgets/simple_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -48,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: kPrimaryColor,
                 ),
               ),
               const SizedBox(height: 16),
@@ -90,11 +91,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
+                          shadowColor: Colors.transparent,
+                          backgroundColor: kPrimaryColor,
+                          foregroundColor: kBackgroundColor,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            side: const BorderSide(color: kPrimaryColor),
+                            borderRadius: BorderRadius.circular(kCornerRadius),
                           ),
                         ),
                         onPressed: _saveEntry,
@@ -117,12 +120,13 @@ class _HomeScreenState extends State<HomeScreen> {
     required VoidCallback onTap,
   }) {
     return InkWell(
+      borderRadius: BorderRadius.circular(kCornerRadius),
       onTap: onTap,
       child: InputDecorator(
         decoration: _inputDecoration(label),
         child: Text(
           selected == null ? 'Select time' : selected.format(context),
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(color: kPrimaryColor),
         ),
       ),
     );
@@ -132,13 +136,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(color: Colors.black87),
+      filled: true,
+      fillColor: kBackgroundColor,
       enabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.black26),
-        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: kBorderColor),
+        borderRadius: BorderRadius.circular(kCornerRadius),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.black),
-        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: kPrimaryColor),
+        borderRadius: BorderRadius.circular(kCornerRadius),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
     );
@@ -156,10 +162,10 @@ class _HomeScreenState extends State<HomeScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Colors.black,
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-              surface: Colors.white,
+              primary: kPrimaryColor,
+              onPrimary: kBackgroundColor,
+              onSurface: kPrimaryColor,
+              surface: kBackgroundColor,
             ),
           ),
           child: child!,
