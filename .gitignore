@@ -21,3 +21,7 @@ build/
 
 # Generated launcher icon
 assets/icon.png
+
+# Python cache
+__pycache__/
+*.pyc
