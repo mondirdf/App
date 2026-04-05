@@ -1,84 +1,148 @@
 import '../models/day_entry.dart';
 
+class StatsSummary {
+  const StatsSummary({required this.sleepAverage, required this.studyAverage});
+
+  final double sleepAverage;
+  final double studyAverage;
+}
+
+class DayMetrics {
+  const DayMetrics({
+    required this.totalSleepHours,
+    required this.totalStudyHours,
+    required this.classification,
+    required this.insight,
+  });
+
+  final double totalSleepHours;
+  final double totalStudyHours;
+  final String classification;
+  final String insight;
+}
+
 class StatsService {
-  double calculateStudyAverage(List<DayEntry> entries) {
-    if (entries.isEmpty) {
-      return 0;
-    }
-
-    final double total = entries.fold(
+  DayMetrics calculateDayMetrics({
+    required String sleepTime,
+    required String wakeTime,
+    required List<NapSession> naps,
+    required List<StudySession> studies,
+    required List<String> events,
+  }) {
+    final double mainSleep = calculateMainSleep(sleepTime: sleepTime, wakeTime: wakeTime);
+    final double napsSleep = naps.fold<double>(
       0,
-      (double sum, DayEntry entry) => sum + entry.studyHours,
-    );
-    return total / entries.length;
-  }
-
-  double calculateSleepAverage(List<DayEntry> entries) {
-    if (entries.isEmpty) {
-      return 0;
-    }
-
-    final double totalHours = entries.fold(
-      0,
-      (double sum, DayEntry entry) => sum + _calculateSleepDuration(entry),
+      (double sum, NapSession nap) => sum + (nap.durationMinutes / 60),
     );
 
-    return totalHours / entries.length;
+    final double totalSleep = mainSleep + napsSleep;
+    final double totalStudy = studies.fold<double>(
+      0,
+      (double sum, StudySession s) => sum + (s.durationMinutes / 60),
+    );
+
+    final String classification = classify(
+      totalSleepHours: totalSleep,
+      totalStudyHours: totalStudy,
+      eventsCount: events.where((String e) => e.trim().isNotEmpty).length,
+    );
+
+    return DayMetrics(
+      totalSleepHours: totalSleep,
+      totalStudyHours: totalStudy,
+      classification: classification,
+      insight: buildInsight(totalSleepHours: totalSleep, totalStudyHours: totalStudy),
+    );
   }
 
-  int calculateStreak(List<DayEntry> entries) {
-    if (entries.isEmpty) {
-      return 0;
+  double calculateMainSleep({required String sleepTime, required String wakeTime}) {
+    DateTime sleep = _timeToDate(sleepTime);
+    DateTime wake = _timeToDate(wakeTime);
+
+    if (!wake.isAfter(sleep)) {
+      wake = wake.add(const Duration(days: 1));
     }
 
-    final List<DateTime> uniqueDates = entries
-        .map((DayEntry entry) => DateTime.parse(entry.date))
-        .map((DateTime date) => DateTime(date.year, date.month, date.day))
-        .toSet()
-        .toList()
-      ..sort((DateTime a, DateTime b) => b.compareTo(a));
+    return wake.difference(sleep).inMinutes / 60;
+  }
 
-    int streak = 1;
+  String classify({
+    required double totalSleepHours,
+    required double totalStudyHours,
+    required int eventsCount,
+  }) {
+    int score = 0;
+    if (totalSleepHours >= 7 && totalSleepHours <= 8) {
+      score++;
+    }
+    if (totalStudyHours >= 4) {
+      score++;
+    }
+    if (eventsCount > 0) {
+      score++;
+    }
 
-    for (int i = 0; i < uniqueDates.length - 1; i++) {
-      final DateTime current = uniqueDates[i];
-      final DateTime next = uniqueDates[i + 1];
-      final int difference = current.difference(next).inDays;
+    if (score <= 1) {
+      return 'ضعيف';
+    }
+    if (score == 2) {
+      return 'متوسط';
+    }
+    return 'جيد';
+  }
 
-      if (difference == 1) {
-        streak++;
-      } else {
-        break;
+  String buildInsight({required double totalSleepHours, required double totalStudyHours}) {
+    if (totalSleepHours < 6) {
+      return 'نومك قليل';
+    }
+    if (totalStudyHours < 2) {
+      return 'دراستك اليوم ضعيفة';
+    }
+    if (totalSleepHours >= 7 && totalStudyHours >= 4) {
+      return 'ممتاز، يوم متوازن';
+    }
+    return 'أكمل على نفس النسق';
+  }
+
+  StatsSummary calculateAverages(List<DayEntry> entries, {required int days}) {
+    final DateTime now = DateTime.now();
+    final DateTime fromDate = DateTime(now.year, now.month, now.day).subtract(Duration(days: days - 1));
+
+    final List<DayEntry> filtered = entries.where((DayEntry entry) {
+      final DateTime d = DateTime.parse(entry.date);
+      final DateTime onlyDate = DateTime(d.year, d.month, d.day);
+      if (onlyDate.isBefore(fromDate)) {
+        return false;
       }
+
+      final bool hasData = entry.totalSleepHours > 0 || entry.totalStudyHours > 0;
+      return hasData;
+    }).toList();
+
+    if (filtered.isEmpty) {
+      return const StatsSummary(sleepAverage: 0, studyAverage: 0);
     }
 
-    return streak;
-  }
+    final double totalSleep = filtered.fold<double>(
+      0,
+      (double sum, DayEntry e) => sum + e.totalSleepHours,
+    );
 
-  DayEntry? getBestDay(List<DayEntry> entries) {
-    if (entries.isEmpty) {
-      return null;
-    }
+    final double totalStudy = filtered.fold<double>(
+      0,
+      (double sum, DayEntry e) => sum + e.totalStudyHours,
+    );
 
-    entries.sort((DayEntry a, DayEntry b) => b.studyHours.compareTo(a.studyHours));
-    return entries.first;
-  }
-
-  double _calculateSleepDuration(DayEntry entry) {
-    final DateTime wakeUpTime = _timeToDate(entry.wakeUp);
-    DateTime sleepTime = _timeToDate(entry.sleep);
-
-    if (sleepTime.isBefore(wakeUpTime) || sleepTime.isAtSameMomentAs(wakeUpTime)) {
-      sleepTime = sleepTime.add(const Duration(days: 1));
-    }
-
-    return sleepTime.difference(wakeUpTime).inMinutes / 60;
+    return StatsSummary(
+      sleepAverage: totalSleep / filtered.length,
+      studyAverage: totalStudy / filtered.length,
+    );
   }
 
   DateTime _timeToDate(String hhmm) {
     final List<String> parts = hhmm.split(':');
-    final int hour = int.parse(parts[0]);
-    final int minute = int.parse(parts[1]);
+    final int hour = int.tryParse(parts.first) ?? 0;
+    final int minute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
     return DateTime(2000, 1, 1, hour, minute);
   }
 }
