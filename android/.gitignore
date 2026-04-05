@@ -1,0 +1,5 @@
+.gradle/
+/local.properties
+/captures/
+/gradle/wrapper/gradle-wrapper.jar
+**/generated_plugin_registrant.dart
