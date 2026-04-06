@@ -25,31 +25,38 @@ class DailyTrackerApp extends StatelessWidget {
         scaffoldBackgroundColor: kBackgroundColor,
         colorScheme: const ColorScheme.light(
           primary: kPrimaryColor,
-          onPrimary: kBackgroundColor,
+          onPrimary: Colors.white,
           surface: kBackgroundColor,
           onSurface: kPrimaryColor,
-          outline: kBorderColor,
         ),
         appBarTheme: const AppBarTheme(
           elevation: 0,
           backgroundColor: kBackgroundColor,
           foregroundColor: kPrimaryColor,
         ),
-        cardColor: kBackgroundColor,
-        dividerColor: kBorderColor,
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: kPrimaryColor),
+          bodySmall: TextStyle(color: kSecondaryTextColor),
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: EdgeInsets.zero,
+        ),
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           elevation: 0,
           backgroundColor: kBackgroundColor,
           selectedItemColor: kPrimaryColor,
-          unselectedItemColor: Colors.black54,
+          unselectedItemColor: kSecondaryTextColor,
           selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
           type: BottomNavigationBarType.fixed,
         ),
         snackBarTheme: const SnackBarThemeData(
           backgroundColor: kPrimaryColor,
-          contentTextStyle: TextStyle(color: kBackgroundColor),
+          contentTextStyle: TextStyle(color: Colors.white),
           behavior: SnackBarBehavior.floating,
         ),
         useMaterial3: true,
@@ -100,24 +107,19 @@ class _RootScreenState extends State<RootScreen> {
 
     return Scaffold(
       body: tabs[_currentTabIndex],
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: kBorderColor)),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentTabIndex,
-          onTap: (int index) {
-            setState(() {
-              _currentTabIndex = index;
-            });
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_chart_outlined), label: 'Stats'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), label: 'Study Log'),
-            BottomNavigationBarItem(icon: Icon(Icons.star_outline), label: 'Events'),
-          ],
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentTabIndex,
+        onTap: (int index) {
+          setState(() {
+            _currentTabIndex = index;
+          });
+        },
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.insert_chart_outlined), label: 'Stats'),
+          BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), label: 'Study Log'),
+          BottomNavigationBarItem(icon: Icon(Icons.star_outline), label: 'Events'),
+        ],
       ),
     );
   }
