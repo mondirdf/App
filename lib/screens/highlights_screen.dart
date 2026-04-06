@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/day_entry.dart';
 import '../theme_constants.dart';
-import '../widgets/soft_ui.dart';
+import '../widgets/simple_card.dart';
 
 class HighlightsScreen extends StatelessWidget {
   const HighlightsScreen({super.key, required this.entries});
@@ -18,32 +18,24 @@ class HighlightsScreen extends StatelessWidget {
       backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: sorted.isEmpty
-              ? const Center(child: Text('No events yet', style: TextStyle(color: kSecondaryTextColor)))
+              ? const Center(child: Text('No events yet'))
               : ListView.separated(
                   itemBuilder: (BuildContext context, int index) {
                     final DayEntry day = sorted[index];
-                    return SoftContainer(
+                    return SimpleCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(_shortDate(day.date), style: const TextStyle(fontWeight: FontWeight.w700)),
-                          const SizedBox(height: 8),
-                          if (day.events.isEmpty)
-                            const Text('-', style: TextStyle(color: kSecondaryTextColor))
-                          else
-                            ...day.events.map(
-                              (String e) => Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
-                                child: Text(e),
-                              ),
-                            ),
+                          const SizedBox(height: 6),
+                          if (day.events.isEmpty) const Text('-') else ...day.events.map((String e) => Text('- $e')),
                         ],
                       ),
                     );
                   },
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemCount: sorted.length,
                 ),
         ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/day_entry.dart';
 import '../theme_constants.dart';
-import '../widgets/soft_ui.dart';
+import '../widgets/simple_card.dart';
 
 class StudyScreen extends StatelessWidget {
   const StudyScreen({super.key, required this.entries});
@@ -18,32 +18,24 @@ class StudyScreen extends StatelessWidget {
       backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: sorted.isEmpty
-              ? const Center(child: Text('No studies yet', style: TextStyle(color: kSecondaryTextColor)))
+              ? const Center(child: Text('No studies yet'))
               : ListView.separated(
                   itemBuilder: (BuildContext context, int index) {
                     final DayEntry day = sorted[index];
-                    return SoftContainer(
+                    return SimpleCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(_shortDate(day.date), style: const TextStyle(fontWeight: FontWeight.w700)),
-                          const SizedBox(height: 8),
-                          if (day.studies.isEmpty)
-                            const Text('-', style: TextStyle(color: kSecondaryTextColor))
-                          else
-                            ...day.studies.map(
-                              (StudySession s) => Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
-                                child: Text('${s.subject}  ${(s.durationMinutes / 60).toStringAsFixed(1)}h'),
-                              ),
-                            ),
+                          const SizedBox(height: 6),
+                          if (day.studies.isEmpty) const Text('-') else ...day.studies.map((StudySession s) => Text('- ${s.subject} (${(s.durationMinutes / 60).toStringAsFixed(1)}h)')),
                         ],
                       ),
                     );
                   },
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemCount: sorted.length,
                 ),
         ),
