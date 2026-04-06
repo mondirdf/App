@@ -119,15 +119,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 18),
-            _sectionTitle('💤 Naps'),
+            _sectionHeader(icon: Icons.bedtime_outlined, title: 'Naps'),
             ..._buildNaps(),
             TextButton.icon(onPressed: _addNapAndSave, icon: const Icon(Icons.add), label: const Text('Add Nap')),
             const SizedBox(height: 8),
-            _sectionTitle('📚 Study'),
+            _sectionHeader(icon: Icons.menu_book_outlined, title: 'Study'),
             ..._buildStudies(),
             TextButton.icon(onPressed: _addStudyAndSave, icon: const Icon(Icons.add), label: const Text('Add Study')),
             const SizedBox(height: 8),
-            _sectionTitle('⭐ Events'),
+            _sectionHeader(icon: Icons.event_note_outlined, title: 'Events'),
             ..._buildEvents(),
             TextButton.icon(onPressed: _addEventAndSave, icon: const Icon(Icons.add), label: const Text('Add Event')),
             const SizedBox(height: 16),
@@ -170,6 +170,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SimpleCard(
           child: Column(
             children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(
+                    onPressed: () => _removeNapAndSave(index),
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Delete nap',
+                  ),
+                ],
+              ),
               _timeTile(
                 label: 'Start',
                 time: nap.start,
@@ -197,6 +207,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SimpleCard(
           child: Column(
             children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  IconButton(
+                    onPressed: () => _removeStudyAndSave(index),
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Delete study',
+                  ),
+                ],
+              ),
               TextField(
                 controller: study.subjectController,
                 decoration: const InputDecoration(labelText: 'Subject'),
@@ -220,19 +240,38 @@ class _HomeScreenState extends State<HomeScreen> {
     return List<Widget>.generate(_eventControllers.length, (int index) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 8),
-        child: TextField(
-          controller: _eventControllers[index],
-          decoration: InputDecoration(labelText: 'Event ${index + 1}'),
-          onChanged: (_) => _autoSaveDraft(),
+        child: SimpleCard(
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: TextField(
+                  controller: _eventControllers[index],
+                  decoration: InputDecoration(labelText: 'Event ${index + 1}'),
+                  onChanged: (_) => _autoSaveDraft(),
+                ),
+              ),
+              IconButton(
+                onPressed: () => _removeEventAndSave(index),
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Delete event',
+              ),
+            ],
+          ),
         ),
       );
     });
   }
 
-  Widget _sectionTitle(String title) {
+  Widget _sectionHeader({required IconData icon, required String title}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, top: 4),
-      child: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+      child: Row(
+        children: <Widget>[
+          Icon(icon, size: 18, color: Colors.black54),
+          const SizedBox(width: 8),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+        ],
+      ),
     );
   }
 
@@ -482,6 +521,21 @@ class _HomeScreenState extends State<HomeScreen> {
     _autoSaveDraft();
   }
 
+  void _removeNapAndSave(int index) {
+    setState(() => _removeNap(index));
+    _autoSaveDraft();
+  }
+
+  void _removeStudyAndSave(int index) {
+    setState(() => _removeStudy(index));
+    _autoSaveDraft();
+  }
+
+  void _removeEventAndSave(int index) {
+    setState(() => _removeEvent(index));
+    _autoSaveDraft();
+  }
+
   void _addNap() {
     _naps.add(_NapInput(start: const TimeOfDay(hour: 13, minute: 0), durationController: TextEditingController()));
   }
@@ -492,6 +546,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _addEvent() {
     _eventControllers.add(TextEditingController());
+  }
+
+  void _removeNap(int index) {
+    if (index < 0 || index >= _naps.length) {
+      return;
+    }
+    _naps.removeAt(index).durationController.dispose();
+  }
+
+  void _removeStudy(int index) {
+    if (index < 0 || index >= _studies.length) {
+      return;
+    }
+    final _StudyInput removed = _studies.removeAt(index);
+    removed.subjectController.dispose();
+    removed.durationController.dispose();
+  }
+
+  void _removeEvent(int index) {
+    if (index < 0 || index >= _eventControllers.length) {
+      return;
+    }
+    _eventControllers.removeAt(index).dispose();
   }
 
   void _resetDynamicControllers() {

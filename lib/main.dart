@@ -39,13 +39,16 @@ class DailyTrackerApp extends StatelessWidget {
         dividerColor: kBorderColor,
         splashFactory: NoSplash.splashFactory,
         highlightColor: Colors.transparent,
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          elevation: 0,
+        navigationBarTheme: NavigationBarThemeData(
+          height: 72,
           backgroundColor: kBackgroundColor,
-          selectedItemColor: kPrimaryColor,
-          unselectedItemColor: Colors.black54,
-          selectedLabelStyle: TextStyle(fontWeight: FontWeight.w600),
-          type: BottomNavigationBarType.fixed,
+          indicatorColor: kPrimaryColor.withOpacity(0.1),
+          labelTextStyle: MaterialStateProperty.resolveWith<TextStyle>((Set<MaterialState> states) {
+            if (states.contains(MaterialState.selected)) {
+              return const TextStyle(fontWeight: FontWeight.w700, color: kPrimaryColor);
+            }
+            return const TextStyle(fontWeight: FontWeight.w500, color: Colors.black54);
+          }),
         ),
         snackBarTheme: const SnackBarThemeData(
           backgroundColor: kPrimaryColor,
@@ -69,6 +72,7 @@ class RootScreen extends StatefulWidget {
 class _RootScreenState extends State<RootScreen> {
   final StorageService _storageService = StorageService();
   final StatsService _statsService = StatsService();
+  final PageController _pageController = PageController();
 
   int _currentTabIndex = 0;
   List<DayEntry> _entries = <DayEntry>[];
@@ -77,6 +81,12 @@ class _RootScreenState extends State<RootScreen> {
   void initState() {
     super.initState();
     _loadEntries();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadEntries() async {
@@ -99,24 +109,61 @@ class _RootScreenState extends State<RootScreen> {
     ];
 
     return Scaffold(
-      body: tabs[_currentTabIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (int index) {
+          if (_currentTabIndex == index) {
+            return;
+          }
+          setState(() {
+            _currentTabIndex = index;
+          });
+        },
+        children: tabs,
+      ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: kBorderColor)),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentTabIndex,
-          onTap: (int index) {
-            setState(() {
-              _currentTabIndex = index;
-            });
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.insert_chart_outlined), label: 'Stats'),
-            BottomNavigationBarItem(icon: Icon(Icons.menu_book_outlined), label: 'Study Log'),
-            BottomNavigationBarItem(icon: Icon(Icons.star_outline), label: 'Events'),
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        decoration: BoxDecoration(
+          color: kBackgroundColor,
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(color: kBorderColor),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(color: Color(0xFFFFFFFF), offset: Offset(-6, -6), blurRadius: 12),
+            BoxShadow(color: Color(0xFFD1D0CD), offset: Offset(6, 6), blurRadius: 12),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: NavigationBar(
+            selectedIndex: _currentTabIndex,
+            onDestinationSelected: (int index) {
+              if (index == _currentTabIndex) {
+                return;
+              }
+              _pageController.animateToPage(
+                index,
+                duration: const Duration(milliseconds: 360),
+                curve: Curves.easeInOutCubic,
+              );
+              setState(() {
+                _currentTabIndex = index;
+              });
+            },
+            destinations: const <NavigationDestination>[
+              NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home_rounded), label: 'Home'),
+              NavigationDestination(
+                icon: Icon(Icons.insert_chart_outlined),
+                selectedIcon: Icon(Icons.insert_chart_rounded),
+                label: 'Stats',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.menu_book_outlined),
+                selectedIcon: Icon(Icons.menu_book_rounded),
+                label: 'Study Log',
+              ),
+              NavigationDestination(icon: Icon(Icons.star_outline), selectedIcon: Icon(Icons.star_rounded), label: 'Events'),
+            ],
+          },
         ),
       ),
     );
