@@ -85,7 +85,7 @@ class DayEntry {
         : <StudySession>[];
 
     final List<String> events = eventsRaw is List
-        ? eventsRaw.map((Object e) => e.toString()).toList()
+        ? eventsRaw.map<String>((Object? e) => e.toString()).toList()
         : <String>[];
 
     final double legacyStudyHours = ((json['studyHours'] as num?) ?? 0).toDouble();
